@@ -7,28 +7,205 @@
 import SwiftUI
 
 
+enum AlgoResult {
+    case yes
+    case no
+}
+
 struct AlgoDetailView: View {
+
+    let algo: String
+
+    @State private var inputText: String = ""
+    @State private var result: AlgoResult? = nil
     
-    var algo : String
-    
-    
+    @State private var sortedResult: String = ""
+
     var body: some View {
-        
-        
-        if(algo == "Palindrome"){
+        VStack(alignment: .leading, spacing: 20) {
+
+            if algo == "Palindrome" {
+                palindromeView
+            }
             
-            TextField("Enter input number Name", text: .constant(""))
+            if algo == "Bubble Sort" {
+                bubbleSortView
+            }
             
+            if algo == "Insertion Sort" {
+                insertionSortView
+            }
+
+            Spacer()
+        }
+        .padding()
+        .navigationTitle(algo)
+    }
+}
+
+private extension AlgoDetailView {
+
+    var palindromeView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+
+            Text("Palindrome Check")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            TextField("Enter input", text: $inputText)
+                .textFieldStyle(.roundedBorder)
+
             Button("Go") {
-                ///when en	tering the text in textfield, I want to do a check here
-                ///
+                // 👉 You write your palindrome logic here
+                // Example:
+                // result = isPalindrome(inputText) ? .yes : .no
+                var characters = Array(inputText)
+                result = .yes
+                var currIndex = 0
+                while currIndex < characters.count/2 {
+                    if(characters[currIndex].lowercased() != characters[characters.count - currIndex - 1].lowercased())
+                    {
+                       result = .no
+                    }
+                    currIndex += 1
+                    
+                }
+            }
+            .buttonStyle(.borderedProminent)
+
+            if let result = result{
+                Text(resultText)
+                    .font(.headline)
+                    .foregroundColor(resultColor)
             }
         }
-       
-            
-        
     }
     
-
     
+    var bubbleSortView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+
+            Text("Bubble sort Check")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            TextField("Enter comma seperated numbers", text: $inputText)
+                .textFieldStyle(.roundedBorder)
+
+            Button("Go") {
+
+                        // 1️⃣ Convert input to Int array
+                        var numbers = inputText
+                            .components(separatedBy: ",")
+                            .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+
+                        // 2️⃣ Bubble Sort logic (classic)
+                        guard numbers.count > 1 else {
+                            sortedResult = numbers.map(String.init).joined(separator: ", ")
+                            return
+                        }
+
+                        for i in 0..<numbers.count {
+                            for j in 0..<(numbers.count - i - 1) {
+                                if numbers[j] > numbers[j + 1] {
+                                    numbers.swapAt(j, j + 1)
+                                }
+                            }
+                        }
+
+                        // 3️⃣ Bind output back to UI
+                        sortedResult = numbers.map(String.init).joined(separator: ", ")
+                    }
+                    .buttonStyle(.borderedProminent)
+            
+            if !sortedResult.isEmpty {
+                        Text("Sorted Result:")
+                            .font(.headline)
+
+                        Text(sortedResult)
+                            .foregroundColor(.green)
+                    }
+
+           
+        }
+    }
+    
+    var insertionSortView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+
+            Text("Insertion Sort")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            TextField("Enter comma separated numbers", text: $inputText)
+                .textFieldStyle(.roundedBorder)
+                .keyboardType(.numbersAndPunctuation)
+
+            Button("Go") {
+
+                // 1️⃣ Parse input
+                var numbers = inputText
+                    .components(separatedBy: ",")
+                    .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+
+                guard numbers.count > 1 else {
+                    sortedResult = numbers.map(String.init).joined(separator: ", ")
+                    return
+                }
+
+                // 2️⃣ Insertion Sort
+                for i in 1..<numbers.count {
+                    let key = numbers[i]
+                    var j = i - 1
+
+                    while j >= 0 && numbers[j] > key {
+                        numbers[j + 1] = numbers[j]
+                        j -= 1
+                    }
+
+                    numbers[j + 1] = key
+                }
+
+                // 3️⃣ Bind output
+                sortedResult = numbers.map(String.init).joined(separator: ", ")
+            }
+            .buttonStyle(.borderedProminent)
+
+            if !sortedResult.isEmpty {
+                Text("Sorted Result:")
+                    .font(.headline)
+
+                Text(sortedResult)
+                    .foregroundColor(.green)
+            }
+        }
+    }
+
+
+    var resultText: String {
+        switch result {
+        case .yes:
+            return "Yes"
+        case .no:
+            return "No"
+        case nil:
+            return ""
+        }
+    }
+
+    var resultColor: Color {
+        switch result {
+        case .yes:
+            return .green
+        case .no:
+            return .red
+        case nil:
+            return .clear
+        }
+    }
 }
+
+
+
+
+
