@@ -35,6 +35,12 @@ struct AlgoDetailView: View {
             if algo == "Insertion Sort" {
                 insertionSortView
             }
+            if algo == "Merge Sort" {
+                mergeSortView
+            }
+            if algo == "Quick Sort" {
+                quickSortView
+            }
 
             Spacer()
         }
@@ -180,6 +186,137 @@ private extension AlgoDetailView {
             }
         }
     }
+    
+    
+    var mergeSortView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+
+            Text("Merge Sort")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            TextField("Enter comma separated numbers", text: $inputText)
+                .textFieldStyle(.roundedBorder)
+                .keyboardType(.numbersAndPunctuation)
+
+            Button("Go") {
+
+                // 1️⃣ Parse input
+                let numbers = inputText
+                    .components(separatedBy: ",")
+                    .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+
+                guard numbers.count > 1 else {
+                    sortedResult = numbers.map(String.init).joined(separator: ", ")
+                    return
+                }
+
+                // 2️⃣ Merge Sort
+                let sortedNumbers = mergeSort(numbers)
+
+                // 3️⃣ Bind output
+                sortedResult = sortedNumbers.map(String.init).joined(separator: ", ")
+            }
+            .buttonStyle(.borderedProminent)
+
+            if !sortedResult.isEmpty {
+                Text("Sorted Result:")
+                    .font(.headline)
+
+                Text(sortedResult)
+                    .foregroundColor(.green)
+            }
+        }
+    }
+
+    func mergeSort(_ array: [Int]) -> [Int] {
+        guard array.count > 1 else { return array }
+
+        let middle = array.count / 2
+        let left = mergeSort(Array(array[..<middle]))
+        let right = mergeSort(Array(array[middle...]))
+
+        return merge(left, right)
+    }
+
+    func merge(_ left: [Int], _ right: [Int]) -> [Int] {
+        var merged: [Int] = []
+        var i = 0
+        var j = 0
+
+        while i < left.count && j < right.count {
+            if left[i] <= right[j] {
+                merged.append(left[i])
+                i += 1
+            } else {
+                merged.append(right[j])
+                j += 1
+            }
+        }
+
+        // Append remaining elements
+        merged.append(contentsOf: left[i...])
+        merged.append(contentsOf: right[j...])
+
+        return merged
+    }
+    
+    var quickSortView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+
+            Text("Quick Sort")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            TextField("Enter comma separated numbers", text: $inputText)
+                .textFieldStyle(.roundedBorder)
+                .keyboardType(.numbersAndPunctuation)
+
+            Button("Go") {
+
+                // 1️⃣ Parse input
+                let numbers = inputText
+                    .components(separatedBy: ",")
+                    .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+
+                guard numbers.count > 1 else {
+                    sortedResult = numbers.map(String.init).joined(separator: ", ")
+                    return
+                }
+
+                // 2️⃣ Quick Sort
+                let sortedNumbers = quickSort(numbers)
+
+                // 3️⃣ Bind output
+                sortedResult = sortedNumbers.map(String.init).joined(separator: ", ")
+            }
+            .buttonStyle(.borderedProminent)
+
+            if !sortedResult.isEmpty {
+                Text("Sorted Result:")
+                    .font(.headline)
+
+                Text(sortedResult)
+                    .foregroundColor(.green)
+            }
+        }
+    }
+    
+    func quickSort(_ array: [Int]) -> [Int] {
+        guard array.count > 1 else { return array }
+
+        let pivot = array[array.count / 2]
+
+        let less = array.filter { $0 < pivot }
+        let equal = array.filter { $0 == pivot }
+        let greater = array.filter { $0 > pivot }
+
+        return quickSort(less) + equal + quickSort(greater)
+    }
+
+
+
+    
 
 
     var resultText: String {
