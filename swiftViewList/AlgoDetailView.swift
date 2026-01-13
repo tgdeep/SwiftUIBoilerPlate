@@ -41,6 +41,9 @@ struct AlgoDetailView: View {
             if algo == "Quick Sort" {
                 quickSortView
             }
+            if algo == "Heap Sort" {
+                quickSortView
+            }
 
             Spacer()
         }
@@ -312,6 +315,82 @@ private extension AlgoDetailView {
         let greater = array.filter { $0 > pivot }
 
         return quickSort(less) + equal + quickSort(greater)
+    }
+
+
+    var heapSortView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+
+            Text("Heap Sort")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            TextField("Enter comma separated numbers", text: $inputText)
+                .textFieldStyle(.roundedBorder)
+                .keyboardType(.numbersAndPunctuation)
+
+            Button("Go") {
+
+                // 1️⃣ Parse input
+                var numbers = inputText
+                    .components(separatedBy: ",")
+                    .compactMap { Int($0.trimmingCharacters(in: .whitespaces)) }
+
+                guard numbers.count > 1 else {
+                    sortedResult = numbers.map(String.init).joined(separator: ", ")
+                    return
+                }
+
+                // 2️⃣ Heap Sort
+                heapSort(&numbers)
+
+                // 3️⃣ Bind output
+                sortedResult = numbers.map(String.init).joined(separator: ", ")
+            }
+            .buttonStyle(.borderedProminent)
+
+            if !sortedResult.isEmpty {
+                Text("Sorted Result:")
+                    .font(.headline)
+
+                Text(sortedResult)
+                    .foregroundColor(.green)
+            }
+        }
+    }
+    
+    func heapSort(_ array: inout [Int]) {
+        let n = array.count
+
+        // Build max heap
+        for i in stride(from: n / 2 - 1, through: 0, by: -1) {
+            heapify(&array, n, i)
+        }
+
+        // Extract elements from heap
+        for i in stride(from: n - 1, through: 1, by: -1) {
+            array.swapAt(0, i)
+            heapify(&array, i, 0)
+        }
+    }
+
+    func heapify(_ array: inout [Int], _ n: Int, _ i: Int) {
+        var largest = i
+        let left = 2 * i + 1
+        let right = 2 * i + 2
+
+        if left < n && array[left] > array[largest] {
+            largest = left
+        }
+
+        if right < n && array[right] > array[largest] {
+            largest = right
+        }
+
+        if largest != i {
+            array.swapAt(i, largest)
+            heapify(&array, n, largest)
+        }
     }
 
 

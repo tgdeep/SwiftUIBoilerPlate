@@ -12,7 +12,7 @@ struct PersonListView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \Person.name) private var people: [Person]
     @State private var showingAddPerson = false
-    private var listOfAlgo : [String] = ["Palindrome", "Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort"]
+    private var listOfAlgo : [String] = ["Palindrome", "Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort", "Heap Sort"]
     
     // 👇 Add this explicit initializer to make it accessible
        init() {}
