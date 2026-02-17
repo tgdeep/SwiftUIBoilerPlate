@@ -12,7 +12,7 @@ struct PersonListView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \Person.name) private var people: [Person]
     @State private var showingAddPerson = false
-    private var listOfAlgo : [String] = ["Palindrome", "Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort", "Heap Sort"]
+    private var listOfAlgo : [String] = ["Palindrome", "Bubble Sort", "Insertion Sort", "Merge Sort", "Quick Sort", "Heap Sort", "Sample Legacy","Practice View", "Practice View 2"]
     
     // 👇 Add this explicit initializer to make it accessible
        init() {}
@@ -41,13 +41,27 @@ struct PersonListView: View {
                     
                     List(listOfAlgo.indices, id: \.self) { index in
                         
-                        NavigationLink(destination: AlgoDetailView(algo: listOfAlgo[index])) {
-                            
-                            VStack(alignment: .leading) {
-                                Text(listOfAlgo[index])
-                                    .font(.headline)
+                        if(listOfAlgo[index] == "Practive View"){
+                            NavigationLink(destination: AlgoDetailView(algo: listOfAlgo[index])) {
+                                
+                                VStack(alignment: .leading) {
+                                    Text(listOfAlgo[index])
+                                        .font(.headline)
+                                }
                             }
                         }
+                        
+                        else{
+                            NavigationLink(destination: AlgoDetailView(algo: listOfAlgo[index])) {
+                                
+                                VStack(alignment: .leading) {
+                                    Text(listOfAlgo[index])
+                                        .font(.headline)
+                                }
+                            }
+                        }
+                        
+                        
                         
                     }
                     
@@ -73,6 +87,46 @@ struct PersonListView: View {
         }
     }
 }
+
+@MainActor
+class DownloadManager {
+    func startDownload() {
+        // A regular Task would inherit the @MainActor context
+        Task {
+            print("Download started on Main Actor")
+            await LogService.saveLog("Downloaded 1 bytes")
+            
+            // USE CASE: Detached task for independent background logging
+            // This task is completely independent. If the download manager
+            // is destroyed, this task can keep running on its own context.
+            Task.detached(priority: .background) {
+                // Not isolated to MainActor; executes on a background thread
+                print("Log saved independently of the main UI thread.")
+            }
+            
+            updateUI(with: Data.init())
+        }
+    }
+    
+    func performHeavyDownload() -> Data{
+        
+        return Data.init()
+    }
+    
+    func updateUI(with: Data){
+        
+    }
+}
+
+struct LogService {
+    static func saveLog(_ message: String) async {
+        // Simulate async log persistence
+        await Task.yield()
+        print("LOG:", message)
+    }
+}
+
+
 
 
 #Preview {

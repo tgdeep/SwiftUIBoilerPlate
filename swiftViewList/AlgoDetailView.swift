@@ -44,11 +44,28 @@ struct AlgoDetailView: View {
             if algo == "Heap Sort" {
                 quickSortView
             }
+            if algo == "Sample Legacy" {
+                legacy
+            }
+            /*if algo == "Practice View" {
+                PracticeView()
+            }
+            if algo == "Practice View 2" {
+                PracticeViewPassThru()
+            }*/
 
             Spacer()
         }
         .padding()
         .navigationTitle(algo)
+    }
+}
+
+private extension AlgoDetailView {
+    
+    var legacy : some View {
+        
+        SampleSwiftView()
     }
 }
 
