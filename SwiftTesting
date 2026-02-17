@@ -1,0 +1,182 @@
+🧪 SwiftUI Testing Strategies
+
+SwiftUI is highly testable if you test the right layers.
+The key is not testing views directly, but testing state, logic, and behavior.
+
+1️⃣ Test Business Logic Outside Views
+❌ Anti-Pattern
+struct MyView: View {
+    var body: some View {
+        Text(calculateValue())
+    }
+}
+
+✅ Correct
+final class MyViewModel {
+    func calculateValue() -> Int {
+        42
+    }
+}
+
+
+Why:
+SwiftUI views are value types and difficult to unit test directly.
+
+2️⃣ Unit Test ViewModels (Primary Strategy)
+Example ViewModel
+final class CounterViewModel: ObservableObject {
+    @Published var count = 0
+
+    func increment() {
+        count += 1
+    }
+}
+
+Unit Test
+func testIncrement() {
+    let vm = CounterViewModel()
+    vm.increment()
+    XCTAssertEqual(vm.count, 1)
+}
+
+
+Coverage Goal:
+
+State changes
+
+Business rules
+
+Edge cases
+
+3️⃣ Test Async Logic with XCTest + async/await
+ViewModel
+func loadData() async -> String {
+    try? await Task.sleep(nanoseconds: 500_000_000)
+    return "Success"
+}
+
+Test
+func testLoadData() async {
+    let result = await viewModel.loadData()
+    XCTAssertEqual(result, "Success")
+}
+
+
+Why:
+SwiftUI encourages async workflows — tests should match.
+
+4️⃣ Use Dependency Injection for Testability
+❌ Hard-Coded Dependency
+let service = NetworkService()
+
+✅ Injected Dependency
+protocol NetworkServicing {
+    func fetch() async -> String
+}
+
+
+Mock in Tests
+
+final class MockService: NetworkServicing {
+    func fetch() async -> String { "Mock" }
+}
+
+5️⃣ UI Tests for User Flows (Not Logic)
+
+Use XCUITest for:
+
+Navigation flows
+
+Button taps
+
+Screen transitions
+
+Example
+func testNavigationFlow() {
+    let app = XCUIApplication()
+    app.launch()
+
+    app.buttons["Go"].tap()
+    XCTAssertTrue(app.staticTexts["Detail View"].exists)
+}
+
+
+Tip:
+Assign accessibilityIdentifier to SwiftUI views.
+
+6️⃣ Snapshot Testing (Optional but Powerful)
+
+Use snapshot tests to:
+
+Prevent UI regressions
+
+Validate design consistency
+
+Common tools:
+
+iOSSnapshotTestCase
+
+SnapshotTesting (Point-Free)
+
+Best Use Case:
+
+Design-heavy screens
+
+Marketing UI
+
+7️⃣ Test View State, Not View Hierarchy
+❌ Don’t Test
+
+Exact view structure
+
+Modifier order
+
+Layout hierarchy
+
+✅ Do Test
+
+State changes
+
+Output values
+
+Published properties
+
+Rule of Thumb:
+
+If your test breaks because of a layout change, you’re testing the wrong thing.
+
+8️⃣ Use Preview-Driven Testing (Human Testing)
+
+SwiftUI previews are manual tests.
+
+#Preview {
+    MyView()
+        .environment(\.colorScheme, .dark)
+}
+
+
+Use previews to test:
+
+Dark / light mode
+
+Dynamic type
+
+Localization
+
+Edge cases
+
+9️⃣ Avoid Testing SwiftUI Internals
+❌ Don’t Test
+
+@State behavior
+
+body recomputation
+
+SwiftUI diffing
+
+Apple already tested that.
+
+🔟 Recommended Testing Pyramid
+UI Tests        → Few
+ViewModels      → Many
+Business Logic  → Many
