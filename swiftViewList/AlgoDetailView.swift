@@ -47,12 +47,12 @@ struct AlgoDetailView: View {
             if algo == "Sample Legacy" {
                 legacy
             }
-            /*if algo == "Practice View" {
+            if algo == "Practice View" {
                 PracticeView()
-            }
+            }*/
             if algo == "Practice View 2" {
                 PracticeViewPassThru()
-            }*/
+            }
 
             Spacer()
         }
