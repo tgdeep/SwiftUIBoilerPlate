@@ -50,9 +50,12 @@ struct AlgoDetailView: View {
             if algo == "Practice View" {
                 PracticeView()
             }
-            /*if algo == "Practice View 2" {
+            if algo == "Practice View 2" {
                 PracticeViewPassThru()
-            }*/
+            }
+            if algo == "StringAlgo" {
+                StringAlgo()
+            }
 
             Spacer()
         }

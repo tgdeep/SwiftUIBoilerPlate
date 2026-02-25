@@ -17,10 +17,7 @@ struct PracticeViewPassThru: View {
     private let subject = PassthroughSubject<String, Never>()
     @State private var showingTextField = false
     @State private var enteredText = ""
-
-    
-    // Store cancellables
-    @State private var cancellables = Set<AnyCancellable>()
+    @State private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Body
     var body: some View {
@@ -100,6 +97,7 @@ struct PracticeViewPassThru: View {
     
     private func subscribeToSubject() {
         print("📥 TextField2 subscribing to subject...")
+        cancellables.removeAll()
         
         subject
             .sink { receivedValue in
